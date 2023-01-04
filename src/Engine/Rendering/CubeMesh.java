@@ -4,6 +4,7 @@ import java.util.EnumSet;
 
 import Engine.Utils.Math.Vector2;
 import Engine.Utils.Math.Vector3;
+import Engine.Utils.Math.Vector3Int;
 import Minecraft.Block.Block;
 import Minecraft.Block.BlockFormat;
 
@@ -170,7 +171,7 @@ public final class CubeMesh {
         },
     };
 
-    public static void AddToMesh(EnumSet<Faces> faces, Mesh mesh, Vector3 position, BlockFormat block)
+    public static void AddToMesh(EnumSet<Faces> faces, Mesh mesh, Vector3Int position, BlockFormat block)
     {
         int currentIndex = 0;
         int verticesCount = mesh.vertices.size();

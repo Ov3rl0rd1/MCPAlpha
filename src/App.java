@@ -1,26 +1,13 @@
-import Engine.Rendering.CubeMesh;
 import Engine.Rendering.Material;
-import Engine.Rendering.Mesh;
-
-import java.nio.FloatBuffer;
-import java.util.EnumSet;
 
 import org.lwjgl.glfw.GLFW;
-import org.lwjgl.opengl.GL20;
-import org.lwjgl.system.MemoryUtil;
-import org.lwjglx.test.spaceinvaders.Game;
 
 import Engine.Objects.Camera;
-import Engine.Objects.GameObject;
 import Engine.Objects.Scene;
 import Engine.Physics.Physics;
 import Engine.Rendering.Shader;
-import Engine.Rendering.CubeMesh.Faces;
-import Engine.Utils.Math.Vector3;
 import Engine.io.Input;
 import Engine.io.Window;
-import Minecraft.Block.Block;
-import Minecraft.Block.BlockFormat;
 import Minecraft.World.ChunkManager;
 
 public class App implements Runnable {
@@ -74,8 +61,8 @@ public class App implements Runnable {
 
 	private void update() {
 		window.Update();
-		//gameObject.Update();
 		camera.Update();
+        chunkManager.Update();
 		if (Input.isButtonDown(GLFW.GLFW_MOUSE_BUTTON_LEFT)) 
 		{
 		}

@@ -3,6 +3,7 @@ package Engine.Rendering;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.lwjgl.opengl.GL11;
@@ -108,6 +109,15 @@ public class Mesh {
         MemoryUtil.memFree(trianglesBuffer);
 
         isGenerated = true;
+    }
+
+    public void Add(Collection<Vector3> verts, Collection<Integer> tris, Collection<Vector2> uvs)
+    {
+        Destroy();
+
+        vertices.addAll(verts);
+        triangles.addAll(tris);
+        this.uvs.addAll(uvs);
     }
 
     public void Destroy()

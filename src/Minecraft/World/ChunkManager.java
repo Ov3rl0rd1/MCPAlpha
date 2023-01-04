@@ -6,7 +6,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.lwjgl.util.par.ParOctasphere;
+
 import Engine.Objects.Camera;
+import Engine.Objects.IDrawable;
 import Engine.Objects.Scene;
 import Engine.Rendering.Material;
 import Engine.Utils.Math.Vector2Int;
@@ -15,36 +18,55 @@ import Engine.Utils.Math.Vector3Int;
 import Minecraft.Block.BlockFormat;
 
 
-public class ChunkManager {
+public class ChunkManager implements IDrawable {
 
     private static final int viewRadius = 8;
     private static final int generateDataRadius = viewRadius+1;
 
     private Map<Vector2Int, Chunk> chunks = new HashMap<Vector2Int, Chunk>();
 
+    private List<Chunk> opaqueChunksOrder = new ArrayList<Chunk>();
+    private List<Chunk> transparentChunksOrder = new ArrayList<Chunk>();
+
     private TerrainGenerator terrainGenerator;
+    private Camera player;
     private final Material material;
-    private final Scene scene;
 
     private Vector2Int oldCameraPosition;
 
     public ChunkManager(Material material, Scene scene)
     {
         this.material = material;
-        this.scene = scene;
+        scene.AddObject(this);
         this.terrainGenerator = new TerrainGenerator();
+    }
+
+    public void Draw(Camera camera)
+    {
+        //Draw opaque
+        for (Chunk chunk : opaqueChunksOrder) {
+            if(chunk.IsMeshGenerated())
+                chunk.DrawOpaque(camera);
+        }
+
+        //Draw transparent
+        for (Chunk chunk : transparentChunksOrder) {
+            if(chunk.IsMeshGenerated())
+                chunk.DrawTransparent(camera);
+        }
     }
 
     public void Init(Camera camera)
     {
+        player = camera;
         oldCameraPosition = new Vector2Int((int)camera.position.x / Chunk.Width, (int)camera.position.z / Chunk.Width);
         UpdateChunks(oldCameraPosition);
         camera.position = new Vector3(0, terrainGenerator.GetSpawnPoint(), 0);
     }
 
-    public void Update(Vector3 playerPosition)
+    public void Update()
     {
-        Vector2Int cameraChunkPosition = new Vector2Int((int)playerPosition.x / Chunk.Width, (int)playerPosition.z / Chunk.Width);
+        Vector2Int cameraChunkPosition = new Vector2Int((int)player.position.x / Chunk.Width, (int)player.position.z / Chunk.Width);
 
         if(Vector2Int.Equals(cameraChunkPosition, oldCameraPosition) == false)
         {
@@ -101,15 +123,18 @@ public class ChunkManager {
         {
             chunk = new Chunk(material, position, terrainGenerator, this);
             chunks.put(position, chunk);
+
+            opaqueChunksOrder.add(chunk);
+            opaqueChunksOrder.sort((c1, c2) -> Float.compare(Vector3.Subtract(c1.position, player.position).sqrMagnitude(), Vector3.Subtract(c2.position, player.position).sqrMagnitude()));
+    
+            transparentChunksOrder.add(chunk);
+            transparentChunksOrder.sort((c1, c2) -> Float.compare(Vector3.Subtract(c2.position, player.position).sqrMagnitude(), Vector3.Subtract(c1.position, player.position).sqrMagnitude()));
         }
         else
             chunk = chunks.get(position);
 
         if(chunk.IsDataGenerated() == false)
 		    chunk.GenerateData();
-        
-        if(contains == false)
-            scene.AddObject(chunk);
     }
 
     private void AddMeshToChunk(Vector2Int position)
@@ -125,8 +150,12 @@ public class ChunkManager {
 
     private void RemoveChunk(Chunk chunk)
     {
+        opaqueChunksOrder.remove(chunk);
+        transparentChunksOrder.remove(chunk);
+
         chunks.remove(chunk.chunkPoistion);
-        scene.DestroyObject(chunk);
+
+        chunk.Destroy();
     }
 
     public boolean CheckForBlock(Vector3Int position)
@@ -185,5 +214,39 @@ public class ChunkManager {
 
 
         return chunks.get(currentChunkPosition).GetBlock(chunkBlockPosition);
+    }
+
+    public void AddBlock(Vector3Int position, BlockFormat block)
+    {
+        Vector2Int chunk = new Vector2Int(position.x / Chunk.Width, position.z / Chunk.Width);
+        Vector3Int localPosition = GetLocalChunkPosition(position);
+
+        chunks.get(chunk).AddBlock(localPosition, block);
+    }
+
+    public void Destroy()
+    {
+        for (Chunk chunk : chunks.values()) {
+            chunk.Destroy();
+        }
+
+        chunks.clear();
+        opaqueChunksOrder.clear();
+        transparentChunksOrder.clear();
+    }
+
+    private Vector3Int GetLocalChunkPosition(Vector3Int worldPosition)
+    {
+        if(worldPosition.y > Chunk.Height || worldPosition.y < 0)
+            return null;
+
+        worldPosition = new Vector3Int(worldPosition.x % Chunk.Width, worldPosition.y, worldPosition.z % Chunk.Width);
+
+        if(worldPosition.x < 0)
+            worldPosition.x = worldPosition.x + Chunk.Width;
+        if(worldPosition.z < 0)
+            worldPosition.z = worldPosition.z + Chunk.Width;
+
+        return worldPosition;
     }
 }

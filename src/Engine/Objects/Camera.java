@@ -7,7 +7,10 @@ import Engine.Physics.Physics;
 import Engine.Physics.RaycastResult;
 import Engine.Utils.Math.Mathf;
 import Engine.Utils.Math.Vector3;
+import Engine.Utils.Math.Vector3Int;
 import Engine.io.Input;
+import Minecraft.Block.Block;
+import Minecraft.Block.BlockFormat;
 import Minecraft.World.ChunkManager;
 
 public class Camera extends GameObject {
@@ -71,6 +74,8 @@ public class Camera extends GameObject {
                 System.out.println(rayCast.block.id);
                 System.out.println(rayCast.point);
                 System.out.println(rayCast.normal);
+
+                chunkManager.AddBlock(new Vector3Int(Vector3.Add(rayCast.point, rayCast.normal)), new BlockFormat(Block.STONE));
             }
             else
                 System.out.println("null");
@@ -89,8 +94,6 @@ public class Camera extends GameObject {
 
         oldMouseX = newMouseX;
         oldMouseY = newMouseY;
-
-        chunkManager.Update(position);
     }
 
     public float getAspect()

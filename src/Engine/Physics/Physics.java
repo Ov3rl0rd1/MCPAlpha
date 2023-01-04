@@ -99,12 +99,12 @@ public class Physics {
         Vector3 invDirection = Vector3.Divide(new Vector3(1), direction);
 
 
-        float t2 = (direction.x < 0 ? max.x : min.x - origin.x) * (invDirection.x);
         float t1 = (direction.x < 0 ? max.x : min.x - origin.x) * (invDirection.x);
+        float t2 = (direction.x < 0 ? min.x : max.x - origin.x) * (invDirection.x);
         float t3 = (direction.y < 0 ? max.y : min.y - origin.y) * (invDirection.y);
-        float t4 = (direction.y < 0 ? max.y : min.y - origin.y) * (invDirection.y);
+        float t4 = (direction.y < 0 ? min.y : max.y - origin.y) * (invDirection.y);
         float t5 = (direction.z < 0 ? max.z : min.z - origin.z) * (invDirection.z);
-        float t6 = (direction.z < 0 ? max.z : min.z - origin.z) * (invDirection.z);
+        float t6 = (direction.z < 0 ? min.z : max.z - origin.z) * (invDirection.z);
 
         float tmin = Math.max(Math.max(Math.min(t1, t2), Math.min(t3, t4)), Math.min(t5, t6));
         float tmax = Math.min(Math.min(Math.max(t1, t2), Math.max(t3, t4)), Math.max(t5, t6));
@@ -112,7 +112,7 @@ public class Physics {
         float depth = tmax > Math.max(tmin, 0.0) ? tmin : -1;
 
         Vector3 point = Vector3.Add(origin, Vector3.Multiply(direction, depth));
-        Vector3 hitNormal = Vector3.Subtract(point, blockCenter);
+        Vector3 hitNormal = Vector3.Subtract(blockCenter, point);
 
         float maxComponent = Math.max(Math.abs(hitNormal.x), Math.max(Math.abs(hitNormal.y), Math.abs(hitNormal.z)));
         hitNormal = Math.abs(hitNormal.x) == maxComponent

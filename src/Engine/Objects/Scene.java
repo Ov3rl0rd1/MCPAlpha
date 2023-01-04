@@ -1,15 +1,12 @@
 package Engine.Objects;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
 import Engine.Rendering.Renderer;
 
 public class Scene {
-    public List<GameObject> gameObjects = new ArrayList<GameObject>();
+    public List<IDrawable> gameObjects = new ArrayList<IDrawable>();
 
     private Renderer renderer;
 
@@ -20,7 +17,7 @@ public class Scene {
 
     public void Render(Camera camera)
     {
-        for(GameObject gameObject : gameObjects)
+        for(IDrawable gameObject : gameObjects)
         {
             if(gameObject == null)
                 continue;
@@ -29,12 +26,12 @@ public class Scene {
         }
     }
 
-    public void AddObject(GameObject gameObject)
+    public void AddObject(IDrawable gameObject)
     {
         gameObjects.add(gameObject);
     }
 
-    public void DestroyObject(GameObject gameObject)
+    public void DestroyObject(IDrawable gameObject)
     {
         if(gameObject == null)
             return;
@@ -45,7 +42,7 @@ public class Scene {
 
     public void Destroy()
     {
-        for (GameObject gameObject : gameObjects) {
+        for (IDrawable gameObject : gameObjects) {
             gameObject.Destroy();
         }
     }

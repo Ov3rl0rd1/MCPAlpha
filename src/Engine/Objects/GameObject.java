@@ -6,7 +6,7 @@ import Engine.Utils.Math.Mathf;
 import Engine.Utils.Math.Matrix4f;
 import Engine.Utils.Math.Vector3;
 
-public class GameObject {
+public class GameObject implements IDrawable {
     public Vector3 position, rotation, scale;
     public final Material material;
     protected Mesh mesh;

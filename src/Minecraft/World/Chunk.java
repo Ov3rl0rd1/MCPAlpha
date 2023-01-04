@@ -94,37 +94,12 @@ public class Chunk extends GameObject {
                     if(data[x][y][z] == null)
                         continue;
 
-                    final int xCoords[] = { x, x, x + 1, x - 1, x, x };
-                    final int yCoords[] = { y, y, y, y, y + 1, y - 1};
-                    final int zCoords[] = { z - 1, z + 1, z, z, z, z };
-
-                    EnumSet<Faces> faces = EnumSet.noneOf(Faces.class);
-                    for(int i = 0; i < 6; i++)
-                    {
-                        Vector3Int sideBlock = new Vector3Int(xCoords[i], yCoords[i], zCoords[i]);
-
-                        if(sideBlock.y < 0 || sideBlock.y >= Height)
-                        {
-                            faces.add(Faces.fromInteger(i));
-                            continue;
-                        }
-
-                        BlockFormat block = chunkManager.GetBlock(chunkPoistion, sideBlock);
-                        if(block == null)
-                        {
-                            faces.add(Faces.fromInteger(i));
-                            continue;
-                        }
-                        else if(data[x][y][z].isBlendable == true)
-                            continue;
-                        else if(block.isSolid == false || block.isTransparent)
-                            faces.add(Faces.fromInteger(i));
-                    }
+                    EnumSet<Faces> faces = GetValidFaces(x, y, z);
                     
                     if(data[x][y][z].isTransparent == false)
-                        CubeMesh.AddToMesh(faces, mesh, new Vector3(x, y, z), data[x][y][z]);
+                        CubeMesh.AddToMesh(faces, mesh, new Vector3Int(x, y, z), data[x][y][z]);
                     else
-                        CubeMesh.AddToMesh(faces, transparentMesh, new Vector3(x, y, z), data[x][y][z]);
+                        CubeMesh.AddToMesh(faces, transparentMesh, new Vector3Int(x, y, z), data[x][y][z]);
                 }
             }
         }
@@ -133,6 +108,28 @@ public class Chunk extends GameObject {
         transparentMesh.Build();
 
         _mesh = true;
+    }
+
+    public void AddBlock(Vector3Int position, BlockFormat block)
+    {
+        if(block == null || data[position.x][position.y][position.z] != null)
+            return;
+
+        data[position.x][position.y][position.z] = block;
+
+        EnumSet<Faces> faces = GetValidFaces(position.x, position.y, position.z);
+        if(block.isTransparent)
+        {
+            transparentMesh.Destroy();
+            CubeMesh.AddToMesh(faces, transparentMesh, position, block);
+            transparentMesh.Build();
+        }
+        else
+        {
+            mesh.Destroy();
+            CubeMesh.AddToMesh(faces, mesh, position, block);
+            mesh.Build();
+        }
     }
 
     public BlockFormat GetBlock(Vector3Int localPosition)
@@ -151,9 +148,13 @@ public class Chunk extends GameObject {
         return 0;
     }
 
-    public void Draw(Camera camera)
+    public void DrawOpaque(Camera camera)
     {
         mesh.Render(material, Matrix4f.Transform(position, rotation, scale), camera, false);
+    }
+
+    public void DrawTransparent(Camera camera)
+    {
         transparentMesh.Render(material, Matrix4f.Transform(position, rotation, scale), camera, true);
     }
 
@@ -165,5 +166,37 @@ public class Chunk extends GameObject {
     public boolean IsDataGenerated()
     {
         return _data;
+    }
+
+    private EnumSet<Faces> GetValidFaces(int x, int y, int z)
+    {
+        final int xCoords[] = { x, x, x + 1, x - 1, x, x };
+        final int yCoords[] = { y, y, y, y, y + 1, y - 1};
+        final int zCoords[] = { z - 1, z + 1, z, z, z, z };
+
+        EnumSet<Faces> faces = EnumSet.noneOf(Faces.class);
+        for(int i = 0; i < 6; i++)
+        {
+            Vector3Int sideBlock = new Vector3Int(xCoords[i], yCoords[i], zCoords[i]);
+
+            if(sideBlock.y < 0 || sideBlock.y >= Height)
+            {
+                faces.add(Faces.fromInteger(i));
+                continue;
+            }
+
+            BlockFormat block = chunkManager.GetBlock(chunkPoistion, sideBlock);
+            if(block == null)
+            {
+                faces.add(Faces.fromInteger(i));
+                continue;
+            }
+            else if(data[x][y][z].isBlendable == true)
+                continue;
+            else if(block.isSolid == false || block.isTransparent)
+                faces.add(Faces.fromInteger(i));
+        }
+
+        return faces;
     }
 }

@@ -23,6 +23,13 @@ public class Vector3Int {
         this.z = (int)z;
     }
 
+    public Vector3Int(Vector3 v)
+    {
+        x = (int)v.x;
+        y = (int)v.y;
+        z = (int)v.z;
+    }
+
     public float magnitude()
     {
         return (float)Math.sqrt(x*x+y*y+z*z);
