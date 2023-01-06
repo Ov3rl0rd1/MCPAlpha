@@ -27,7 +27,7 @@ public class Vector2 {
 
     public Vector2 normalized()
     {
-        float length = sqrMagnitude();
+        float length = magnitude();
         return new Vector2(x / length, y / length);
     }
 

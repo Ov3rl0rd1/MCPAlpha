@@ -2,6 +2,8 @@ package Engine.Utils.Math;
 
 import java.util.Arrays;
 
+import Engine.Objects.Camera;
+
 public class Matrix4f {
     public static final int SIZE = 4;
     private float[] elements = new float[SIZE*SIZE];
@@ -78,6 +80,11 @@ public class Matrix4f {
         result = Matrix4f.Multiply(translationMat, Matrix4f.Multiply(rotationMat, scaleMat));
 
         return result;
+    }
+
+    public static Matrix4f Projection(Camera camera)
+    {
+        return Projection(camera.fov, camera.getAspect(), camera.near, camera.far);
     }
 
     public static Matrix4f Projection(float fov, float aspect, float near, float far)

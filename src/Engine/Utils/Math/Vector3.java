@@ -72,9 +72,19 @@ public class Vector3 implements Comparator<Vector3> {
         return new Vector3Int(x >= 0 ? 1 : -1, y >= 0 ? 1 : -1, z >= 0 ? 1 : -1);
     }
 
-    public Vector3Int ceil()
+    public Vector3Int floor()
+    {
+        return new Vector3Int((int)Math.floor(x), (int)Math.floor(y), (int)Math.floor(z));
+    }
+
+    public Vector3Int toInt()
     {
         return new Vector3Int(x, y, z);
+    }
+
+    public Vector3Int ceilNotY()
+    {
+        return new Vector3Int((int)Math.ceil(x), (int)y, (int)Math.ceil(z));
     }
 
     public float dot(Vector3 a)

@@ -5,7 +5,9 @@ import org.lwjglx.Sys;
 
 import Engine.Physics.Physics;
 import Engine.Physics.RaycastResult;
+import Engine.Rendering.Debug.DebugDrawer;
 import Engine.Utils.Math.Mathf;
+import Engine.Utils.Math.Matrix4f;
 import Engine.Utils.Math.Vector3;
 import Engine.Utils.Math.Vector3Int;
 import Engine.io.Input;
@@ -68,7 +70,10 @@ public class Camera extends GameObject {
             direction = Vector3.Add(direction, new Vector3(0, -speed, 0));
         if(Input.isButtonDown(GLFW.GLFW_MOUSE_BUTTON_LEFT))
         {
-            RaycastResult rayCast = Physics.Raycast(position, CalculateForward(), 5f);
+            DebugDrawer.Clear();
+		    DebugDrawer.AddLine(position, Vector3.Add(position, Vector3.Multiply(CalculateForward(), 6)), new Vector3(0.9f, 0.9f, 0));
+            DebugDrawer.AddCube(position.ceilNotY(), new Vector3(0, 0, 1));
+            RaycastResult rayCast = Physics.Raycast(position, CalculateForward(), 6f);
             if(rayCast.hit)
             {
                 System.out.println(rayCast.block.id);
@@ -76,6 +81,20 @@ public class Camera extends GameObject {
                 System.out.println(rayCast.normal);
 
                 chunkManager.AddBlock(new Vector3Int(Vector3.Add(rayCast.point, rayCast.normal)), new BlockFormat(Block.STONE));
+            }
+            else
+                System.out.println("null");
+        }
+        if(Input.isButtonDown(GLFW.GLFW_MOUSE_BUTTON_RIGHT))
+        {
+            RaycastResult rayCast = Physics.Raycast(position, CalculateForward(), 6);
+            if(rayCast.hit)
+            {
+                System.out.println(rayCast.block.id);
+                System.out.println(rayCast.point);
+                System.out.println(rayCast.normal);
+
+                chunkManager.RemoveBlock(new Vector3Int(rayCast.point));
             }
             else
                 System.out.println("null");
@@ -99,5 +118,11 @@ public class Camera extends GameObject {
     public float getAspect()
     {
         return aspect;
+    }
+
+    private Vector3 GetForward()
+    {
+        Matrix4f viewMat = Matrix4f.View(position, rotation);
+        return Vector3.Multiply(new Vector3(viewMat.Get(2, 0), viewMat.Get(2, 1), viewMat.Get(2, 2)), new Vector3(1, -1, -1)).normalized();
     }
 }

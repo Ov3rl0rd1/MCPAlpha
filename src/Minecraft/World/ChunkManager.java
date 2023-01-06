@@ -15,6 +15,7 @@ import Engine.Rendering.Material;
 import Engine.Utils.Math.Vector2Int;
 import Engine.Utils.Math.Vector3;
 import Engine.Utils.Math.Vector3Int;
+import Minecraft.Block.Block;
 import Minecraft.Block.BlockFormat;
 
 
@@ -224,6 +225,15 @@ public class ChunkManager implements IDrawable {
         chunks.get(chunk).AddBlock(localPosition, block);
     }
 
+    public void RemoveBlock(Vector3Int position)
+    {
+        Vector2Int chunk = new Vector2Int(position.x / Chunk.Width, position.z / Chunk.Width);
+        Vector3Int localPosition = GetLocalChunkPosition(position);
+
+
+        chunks.get(chunk).RemoveBlock(localPosition);
+    }
+
     public void Destroy()
     {
         for (Chunk chunk : chunks.values()) {
@@ -243,9 +253,9 @@ public class ChunkManager implements IDrawable {
         worldPosition = new Vector3Int(worldPosition.x % Chunk.Width, worldPosition.y, worldPosition.z % Chunk.Width);
 
         if(worldPosition.x < 0)
-            worldPosition.x = worldPosition.x + Chunk.Width;
+            worldPosition.x = Math.abs(worldPosition.x);
         if(worldPosition.z < 0)
-            worldPosition.z = worldPosition.z + Chunk.Width;
+            worldPosition.z = Math.abs(worldPosition.z);
 
         return worldPosition;
     }

@@ -35,13 +35,10 @@ public class Mesh {
         this.uvs = uvs;
     }
 
-    public void Render(Material material, Matrix4f transform, Camera camera, boolean transparent)
+    public void Render(Material material, Matrix4f transform, Camera camera)
     {
         if(isGenerated == false)
             return;
-
-        if(transparent)
-            EnableTransparent();
 
         GL30.glBindVertexArray(vao);
         GL30.glEnableVertexAttribArray(0);
@@ -62,9 +59,6 @@ public class Mesh {
         GL30.glDisableVertexAttribArray(1);
         GL30.glDisableVertexAttribArray(2);
         GL30.glBindVertexArray(0);
-
-        if(transparent)
-            DisableTransparent();
     }
 
     public void Build()
@@ -122,6 +116,7 @@ public class Mesh {
 
     public void Destroy()
     {
+        isGenerated = false;
         GL15.glDeleteBuffers(pbo);
         GL15.glDeleteBuffers(ibo);
         GL15.glDeleteBuffers(tbo);
@@ -129,15 +124,11 @@ public class Mesh {
         GL30.glDeleteVertexArrays(vao);
     }
 
-    private void EnableTransparent()
+    public void Clear()
     {
-        GL20.glEnable(GL20.GL_BLEND);
-        GL20.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-    }
-
-    private void DisableTransparent()
-    {
-        GL20.glDisable(GL20.GL_BLEND);
+        vertices.clear();
+        triangles.clear();
+        uvs.clear();
     }
 
     private int StoreData(FloatBuffer buffer, int index, int size)

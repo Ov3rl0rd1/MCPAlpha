@@ -132,6 +132,21 @@ public class Chunk extends GameObject {
         }
     }
 
+    public void RemoveBlock(Vector3Int position)
+    {
+        if(data[position.x][position.y][position.z] == null)
+            return;
+
+        data[position.x][position.y][position.z] = null;
+
+        _mesh = false;
+        mesh.Destroy();
+        mesh.Clear();
+        transparentMesh.Destroy();
+        transparentMesh.Clear();
+        GenerateMesh();
+    }
+
     public BlockFormat GetBlock(Vector3Int localPosition)
     {
         return data[localPosition.x][localPosition.y][localPosition.z];
@@ -150,12 +165,12 @@ public class Chunk extends GameObject {
 
     public void DrawOpaque(Camera camera)
     {
-        mesh.Render(material, Matrix4f.Transform(position, rotation, scale), camera, false);
+        mesh.Render(material, Matrix4f.Transform(position, rotation, scale), camera);
     }
 
     public void DrawTransparent(Camera camera)
     {
-        transparentMesh.Render(material, Matrix4f.Transform(position, rotation, scale), camera, true);
+        transparentMesh.Render(material, Matrix4f.Transform(position, rotation, scale), camera);
     }
 
     public boolean IsMeshGenerated()
@@ -186,14 +201,11 @@ public class Chunk extends GameObject {
             }
 
             BlockFormat block = chunkManager.GetBlock(chunkPoistion, sideBlock);
-            if(block == null)
-            {
-                faces.add(Faces.fromInteger(i));
+
+            if(data[x][y][z].isBlendable && block != null)
                 continue;
-            }
-            else if(data[x][y][z].isBlendable == true)
-                continue;
-            else if(block.isSolid == false || block.isTransparent)
+
+            if(block == null || block.isSolid == false || block.isTransparent)
                 faces.add(Faces.fromInteger(i));
         }
 

@@ -38,7 +38,7 @@ public class GameObject implements IDrawable {
 
     public void Draw(Camera camera)
     {
-        mesh.Render(material, Matrix4f.Transform(position, rotation, scale), camera, false);
+        mesh.Render(material, Matrix4f.Transform(position, rotation, scale), camera);
     }
 
     public void Update()
@@ -53,9 +53,9 @@ public class GameObject implements IDrawable {
     public Vector3 CalculateForward()
     {
         Vector3 direction = new Vector3();
-        direction.x = Mathf.CastToFloat(Math.cos(rotation.y * Mathf.Deg2Rad) * Math.cos(rotation.x * Mathf.Deg2Rad));
+		direction.x = -Mathf.CastToFloat(Math.cos(rotation.x * Mathf.Deg2Rad) * Math.sin(rotation.y * Mathf.Deg2Rad));
 		direction.y = Mathf.CastToFloat(Math.sin(rotation.x * Mathf.Deg2Rad));
-		direction.z = Mathf.CastToFloat(Math.sin(rotation.y * Mathf.Deg2Rad) * Math.cos(rotation.x * Mathf.Deg2Rad));
+        direction.z = -Mathf.CastToFloat(Math.cos(rotation.x * Mathf.Deg2Rad) * Math.cos(rotation.y * Mathf.Deg2Rad));
 
         return direction.normalized();
     }

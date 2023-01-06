@@ -6,6 +6,8 @@ import Engine.Objects.Camera;
 import Engine.Objects.Scene;
 import Engine.Physics.Physics;
 import Engine.Rendering.Shader;
+import Engine.Rendering.Debug.DebugDrawer;
+import Engine.Utils.Math.Vector3;
 import Engine.io.Input;
 import Engine.io.Window;
 import Minecraft.World.ChunkManager;
@@ -19,6 +21,7 @@ public class App implements Runnable {
 	private Scene scene;
 	private Material material;
 	private ChunkManager chunkManager;
+	private DebugDrawer debugDrawer;
 
 	public static void main(String[] args) {
 		new App().Start();
@@ -46,6 +49,7 @@ public class App implements Runnable {
 		Physics.Init(chunkManager);
 		camera = new Camera((float)WIDTH / (float)HEIGHT, chunkManager);
 		chunkManager.Init(camera);
+		debugDrawer = new DebugDrawer(camera);
 	}
 	
 	public void run() {
@@ -77,6 +81,7 @@ public class App implements Runnable {
 	
 	private void render() {
 		scene.Render(camera);
+		debugDrawer.DrawAll();
 		window.SwapBuffers();
 	}
 

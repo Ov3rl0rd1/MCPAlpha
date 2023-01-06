@@ -12,6 +12,8 @@ public class Renderer {
 		GL20.glEnable(GL20.GL_ALPHA_TEST);
 		GL20.glEnable(GL20.GL_CULL_FACE);
 		GL20.glDepthMask(true);
+		GL20.glEnable(GL20.GL_BLEND);
+		GL20.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 		GL20.glCullFace(GL20.GL_BACK);
 	}
 
