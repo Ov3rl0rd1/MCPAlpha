@@ -87,7 +87,7 @@ public class Camera extends GameObject {
         }
         if(Input.isButtonDown(GLFW.GLFW_MOUSE_BUTTON_RIGHT))
         {
-            RaycastResult rayCast = Physics.Raycast(position, CalculateForward(), 6);
+            RaycastResult rayCast = Physics.Raycast(position, CalculateForward(), 6f);
             if(rayCast.hit)
             {
                 System.out.println(rayCast.block.id);

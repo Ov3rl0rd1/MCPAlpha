@@ -25,7 +25,7 @@ public class ContinentalnessNoise {
         continentalnessNoise.SetNoiseType(NoiseType.Perlin);
         continentalnessNoise.SetSeed(seed);
         continentalnessNoise.SetFractalOctaves(4);
-        scale = 0.2f;
+        scale = 0.1f;
     }
 
     public int Get(int x, int y)

@@ -114,6 +114,11 @@ public class Vector3 implements Comparator<Vector3> {
         return new Vector3(a.x - b.x, a.y - b.y, a.z - b.z); 
     }
 
+    public static Vector3 Subtract(Vector3 a, Vector3Int b) 
+    { 
+        return new Vector3(a.x - b.x, a.y - b.y, a.z - b.z); 
+    }
+
     public static Vector3 Multiply(Vector3 a, Vector3 b) 
     { 
         return new Vector3(a.x * b.x, a.y * b.y, a.z * b.z); 

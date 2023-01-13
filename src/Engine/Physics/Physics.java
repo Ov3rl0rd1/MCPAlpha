@@ -27,38 +27,34 @@ public class Physics {
             (float)(direction.y == 0.0f ? 1e-10 * blockCenterToOriginSign.y : direction.y),
             (float)(direction.z == 0.0f ? 1e-10 * blockCenterToOriginSign.z : direction.z));
 
-		Vector3 tDelta = Vector3.Divide(Vector3Int.Subtract(Vector3Int.Add(blockCenter, step), origin), goodNormalDirection);
-		if (tDelta.x == 0.0f) tDelta.x = (float)1e10;
-		if (tDelta.y == 0.0f) tDelta.y = (float)1e10;
-		if (tDelta.z == 0.0f) tDelta.z = (float)1e10;
-			
-        Vector3 tMax = tDelta;
 
         RaycastResult result;
-        //if ((result = doRaycast(origin, direction, blockCenter, step)).hit)
-		//{
-		//	return result;
-		//}
+        if ((result = doRaycast(origin, direction, blockCenter, step)).hit)
+		{
+			return result;
+		}
 
-        float minTValue;
+		Vector3 tDelta;
+        Vector3 tMax;
+
+        float minTValue = 0;
         do
         {
-            minTValue = Float.MAX_VALUE;
+            tDelta = Vector3.Divide(Vector3Int.Subtract(blockCenter, origin), goodNormalDirection);
+            tMax = tDelta;
 
             if (tMax.x < tMax.y)
             {
                 if (tMax.x < tMax.z)
                 {
                     blockCenter.x += step.x;
-                    tMax.x += tDelta.x;
-                    minTValue = tMax.x;
+                    minTValue += tDelta.x;
                 }
 
                 else
                 {
                     blockCenter.z += step.z;
-                    tMax.z += tDelta.z;
-					minTValue = tMax.z;
+					minTValue += tDelta.z;
                 }
             }
             else
@@ -66,15 +62,13 @@ public class Physics {
                 if (tMax.y < tMax.z)
                 {
                     blockCenter.y += step.y;
-                    tMax.y += tDelta.y;
-					minTValue = tMax.y;
+					minTValue += tDelta.y;
                 }
 
                 else
                 {
                     blockCenter.z += step.z;
-                    tMax.z += tDelta.z;
-					minTValue = tMax.z;
+					minTValue += tDelta.z;
                 }
             }
 
@@ -84,6 +78,7 @@ public class Physics {
 			{
 				return result;
 			}
+
         } while(minTValue < maxDistance);
 
         return new RaycastResult(null, null, null, false);
